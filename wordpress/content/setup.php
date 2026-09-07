@@ -1186,6 +1186,185 @@ function pll_cannibalization_links() {
 }
 
 /**
+ * 3g-bis) Owner copy revisions, 2026-09-07.
+ *
+ * The marketing pages are COMPOSED FROM PATTERNS AT SEED TIME, so their copy
+ * lives in post_content and editing a pattern file changes nothing on a page
+ * that already exists. PLL_SEED_FORCE would recompose them, and would also
+ * destroy every owner edit made in the block editor since launch, so it is not
+ * an option (MIGRATION.md). This applies the owner's changes as targeted
+ * find/replace against the stored content instead.
+ *
+ * Idempotent by construction: once "from" has been replaced it is no longer
+ * present, so a re-run is a no-op. A revision whose "from" AND "to" are both
+ * missing means the page has drifted from what we expect, which is logged
+ * rather than silently ignored.
+ *
+ * Two groups of change:
+ *
+ * 1. PRECICE MAX naming. The three top-tier packages are PRECICE Max but the
+ *    bullets said either a bare "PRECICE" or "PRECICE 4th Generation", which
+ *    read as a different device from the "PRECICE 2" tiers below them. The
+ *    owner asked for the Max name on the implant lines and in the section
+ *    heading. The PRECICE 2 tiers are deliberately untouched.
+ *
+ * 2. Financing claims. "$1,200/month" and the "0% intro" tile are removed
+ *    everywhere, pending approved CareCredit material. These are advertised
+ *    credit terms, so they do not go back without written sign-off. Note the
+ *    insurance article's answer is published twice, as visible copy (seeded
+ *    here) and as FAQPage JSON-LD (runtime, from pll_seo_paa), so both halves
+ *    have to change or the schema and the page disagree.
+ *
+ * @return array<string, array<int, array{from: string, to: string}>>
+ */
+function pll_copy_revisions() {
+	return array(
+		'/' => array(
+			array(
+				'from' => '<span>2 PRECICE internal nail implants</span>',
+				'to'   => '<span>2 PRECICE MAX internal nail implants</span>',
+			),
+			array(
+				'from' => '<span>4 PRECICE internal nail implants</span>',
+				'to'   => '<span>4 PRECICE MAX internal nail implants</span>',
+			),
+			array(
+				'from' => 'Financing available through CareCredit. As low as $1,200/month with approved credit.',
+				'to'   => 'Financing options are available. We will walk you through them during your consultation.',
+			),
+		),
+		'/limb-lengthening-pricing-options/' => array(
+			array(
+				'from' => 'Limb Lengthening Cost, <em class="italic text-spine">priced like a partner.</em>',
+				'to'   => 'Limb Lengthening <em class="italic text-spine">Cost.</em>',
+			),
+			array(
+				'from' => 'Three procedures. <em class="italic text-spine">One transparent price.</em>',
+				'to'   => 'Three procedures. <em class="italic text-spine">PRECICE MAX cost.</em>',
+			),
+			array(
+				'from' => '<span>2 PRECICE 4th Generation internal nail implants</span>',
+				'to'   => '<span>2 PRECICE MAX internal nail implants</span>',
+			),
+			// Only the bare "PRECICE"; "4 PRECICE 2 internal nail implants" in
+			// the PRECICE 2 group is a different string and stays as it is.
+			array(
+				'from' => '<span>4 PRECICE internal nail implants</span>',
+				'to'   => '<span>4 PRECICE MAX internal nail implants</span>',
+			),
+		),
+		'/is-limb-lengthening-covered-by-insurance/' => array(
+			array(
+				'from' => 'Premier Limb Lengthening offers financing through SoFi and CareCredit, with monthly payments starting as low as $1,200 for qualified applicants.',
+				'to'   => 'Premier Limb Lengthening works with financing partners including SoFi and CareCredit, and terms depend on the applicant and the lender.',
+			),
+		),
+	);
+}
+
+/**
+ * Remove a top-level wp:group by its exact className, with its children.
+ *
+ * Used to pull the financing stat tiles ("$1,200/mo", "0% intro") out of the
+ * stored pricing page. Walks the wp:group open/close comments to find the
+ * matching close rather than assuming the first one, because the block wraps
+ * two nested groups and a non-greedy match would cut it in the middle and
+ * leave unbalanced block markup behind, which the editor then reports as
+ * invalid content.
+ *
+ * @param string $content   Block markup.
+ * @param string $classname Exact className attribute value.
+ * @return string Markup with the group removed, unchanged if not found.
+ */
+function pll_remove_group_by_classname( $content, $classname ) {
+	$needle = '"className":"' . $classname . '"';
+	$at     = strpos( $content, $needle );
+	if ( false === $at ) {
+		return $content;
+	}
+	$start = strrpos( substr( $content, 0, $at ), '<!-- wp:group' );
+	if ( false === $start ) {
+		return $content;
+	}
+
+	$depth  = 0;
+	$cursor = $start;
+	$len    = strlen( $content );
+	while ( $cursor < $len ) {
+		$open  = strpos( $content, '<!-- wp:group', $cursor );
+		$close = strpos( $content, '<!-- /wp:group -->', $cursor );
+		if ( false === $close ) {
+			return $content; // Unbalanced, leave it alone.
+		}
+		if ( false !== $open && $open < $close ) {
+			++$depth;
+			$cursor = $open + strlen( '<!-- wp:group' );
+			continue;
+		}
+		--$depth;
+		$cursor = $close + strlen( '<!-- /wp:group -->' );
+		if ( 0 === $depth ) {
+			return rtrim( substr( $content, 0, $start ) ) . "\n" . ltrim( substr( $content, $cursor ) );
+		}
+	}
+	return $content;
+}
+
+/**
+ * Apply the owner copy revisions to the stored pages.
+ */
+function pll_seed_copy_revisions() {
+	if ( ! function_exists( 'pll_seo_resolve_path_id' ) ) {
+		return;
+	}
+
+	foreach ( pll_copy_revisions() as $path => $revisions ) {
+		$post_id = pll_seo_resolve_path_id( $path );
+		if ( ! $post_id ) {
+			// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
+			error_log( 'pll seed: copy revision target missing: ' . $path );
+			continue;
+		}
+		$post    = get_post( $post_id );
+		$content = $post->post_content;
+		$changed = false;
+
+		foreach ( $revisions as $rev ) {
+			if ( false !== strpos( $content, $rev['from'] ) ) {
+				$content = str_replace( $rev['from'], $rev['to'], $content );
+				$changed = true;
+			} elseif ( false === strpos( $content, $rev['to'] ) ) {
+				// Neither the old copy nor the new copy is present: the page
+				// has been edited away from what this revision assumed.
+				// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
+				error_log( 'pll seed: copy revision stale (' . $path . '): ' . substr( $rev['from'], 0, 60 ) );
+			}
+		}
+
+		if ( '/limb-lengthening-pricing-options/' === $path ) {
+			$stripped = pll_remove_group_by_classname(
+				$content,
+				'mt-10 grid grid-cols-2 gap-0 border-t border-white/25 max-w-[460px]'
+			);
+			if ( $stripped !== $content ) {
+				$content = $stripped;
+				$changed = true;
+			}
+		}
+
+		if ( $changed ) {
+			wp_update_post(
+				array(
+					'ID'           => $post_id,
+					'post_content' => wp_slash( $content ),
+				)
+			);
+		}
+	}
+}
+pll_seed_copy_revisions();
+
+/**
  * 3h) Repoint inbound links away from retired URLs.
  *
  * A consolidation ticket (cannibalization audit A4) retires a duplicate by

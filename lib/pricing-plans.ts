@@ -19,7 +19,7 @@ export const plans = [
     price: "$95,500",
     from: "Single surgery, both femurs",
     features: [
-      "2 PRECICE internal nail implants",
+      "2 PRECICE MAX internal nail implants",
       "Hospitalization",
       "Surgical & anesthesiologist fees",
       "60 on-site sessions",
@@ -32,7 +32,7 @@ export const plans = [
     price: "$105,500",
     from: "Single surgery, both tibias",
     features: [
-      "2 PRECICE internal nail implants",
+      "2 PRECICE MAX internal nail implants",
       "Hospitalization",
       "Surgical & anesthesiologist fees",
       "12 weeks of follow-up care",
@@ -48,7 +48,7 @@ export const plans = [
     from: "Two surgeries, three weeks apart",
     featured: true,
     features: [
-      "4 PRECICE internal nail implants",
+      "4 PRECICE MAX internal nail implants",
       "All hospitalization across both stays",
       "All surgical & anesthesia fees",
       "14 weeks follow-up care",

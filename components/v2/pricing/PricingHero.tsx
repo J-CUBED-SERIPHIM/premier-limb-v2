@@ -16,7 +16,7 @@ export function PricingHero() {
             className="mt-5 font-serif font-normal tracking-[-0.025em] text-ink leading-[0.95] max-w-[18ch]"
             style={{ fontSize: "clamp(44px, 7.2vw, 116px)" }}
           >
-            Limb lengthening, <em className="italic text-spine">priced like a partner.</em>
+            Limb Lengthening <em className="italic text-spine">Cost.</em>
           </h1>
         </Reveal>
         <Reveal delay={0.1} className="col-span-12 lg:col-span-4 lg:pl-6 lg:border-l border-rule lg:self-end">

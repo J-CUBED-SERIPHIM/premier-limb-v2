@@ -11,12 +11,12 @@
  */
 
 ?>
-<!-- wp:group {"tagName":"section","layout":{"type":"default"},"templateLock":"contentOnly","lock":{"move":true,"remove":true},"anchor":"pricing","className":"bg-paper-off py-20 lg:py-28"} -->
+<!-- wp:group {"tagName":"section","layout":{"type":"default"},"templateLock":"contentOnly","anchor":"pricing","className":"bg-paper-off py-20 lg:py-28"} -->
 <section class="wp-block-group bg-paper-off py-20 lg:py-28" id="pricing">
 	<!-- wp:group {"layout":{"type":"default"},"className":"mx-auto max-w-wrap px-6 lg:px-12"} -->
 	<div class="wp-block-group mx-auto max-w-wrap px-6 lg:px-12">
-		<!-- wp:group {"tagName":"header","layout":{"type":"default"},"className":"js-reveal pb-8 mb-6 border-b border-ink"} -->
-		<header class="wp-block-group js-reveal pb-8 mb-6 border-b border-ink">
+		<!-- wp:group {"tagName":"header","layout":{"type":"default"},"className":"js-reveal pb-8 mb-6"} -->
+		<header class="wp-block-group js-reveal pb-8 mb-6">
 			<!-- wp:paragraph {"className":"eyebrow mb-4"} -->
 			<p class="eyebrow mb-4">Transparent Pricing</p>
 			<!-- /wp:paragraph -->
@@ -61,7 +61,7 @@
 
 				<!-- wp:list {"className":"border-t border-rule"} -->
 				<ul class="wp-block-list border-t border-rule"><!-- wp:list-item {"className":"grid grid-cols-[20px_1fr] gap-1.5 items-baseline py-3 border-b border-rule text-[13.5px] text-ink-soft"} -->
-				<li class="grid grid-cols-[20px_1fr] gap-1.5 items-baseline py-3 border-b border-rule text-[13.5px] text-ink-soft"><span aria-hidden="true" class="font-serif font-medium text-spine text-[15px]">+</span><span>2 PRECICE internal nail implants</span></li>
+				<li class="grid grid-cols-[20px_1fr] gap-1.5 items-baseline py-3 border-b border-rule text-[13.5px] text-ink-soft"><span aria-hidden="true" class="font-serif font-medium text-spine text-[15px]">+</span><span>2 PRECICE MAX internal nail implants</span></li>
 				<!-- /wp:list-item --><!-- wp:list-item {"className":"grid grid-cols-[20px_1fr] gap-1.5 items-baseline py-3 border-b border-rule text-[13.5px] text-ink-soft"} -->
 				<li class="grid grid-cols-[20px_1fr] gap-1.5 items-baseline py-3 border-b border-rule text-[13.5px] text-ink-soft"><span aria-hidden="true" class="font-serif font-medium text-spine text-[15px]">+</span><span>Hospitalization</span></li>
 				<!-- /wp:list-item --><!-- wp:list-item {"className":"grid grid-cols-[20px_1fr] gap-1.5 items-baseline py-3 border-b border-rule text-[13.5px] text-ink-soft"} -->
@@ -103,7 +103,7 @@
 
 				<!-- wp:list {"className":"border-t border-rule"} -->
 				<ul class="wp-block-list border-t border-rule"><!-- wp:list-item {"className":"grid grid-cols-[20px_1fr] gap-1.5 items-baseline py-3 border-b border-rule text-[13.5px] text-ink-soft"} -->
-				<li class="grid grid-cols-[20px_1fr] gap-1.5 items-baseline py-3 border-b border-rule text-[13.5px] text-ink-soft"><span aria-hidden="true" class="font-serif font-medium text-spine text-[15px]">+</span><span>2 PRECICE internal nail implants</span></li>
+				<li class="grid grid-cols-[20px_1fr] gap-1.5 items-baseline py-3 border-b border-rule text-[13.5px] text-ink-soft"><span aria-hidden="true" class="font-serif font-medium text-spine text-[15px]">+</span><span>2 PRECICE MAX internal nail implants</span></li>
 				<!-- /wp:list-item --><!-- wp:list-item {"className":"grid grid-cols-[20px_1fr] gap-1.5 items-baseline py-3 border-b border-rule text-[13.5px] text-ink-soft"} -->
 				<li class="grid grid-cols-[20px_1fr] gap-1.5 items-baseline py-3 border-b border-rule text-[13.5px] text-ink-soft"><span aria-hidden="true" class="font-serif font-medium text-spine text-[15px]">+</span><span>Hospitalization</span></li>
 				<!-- /wp:list-item --><!-- wp:list-item {"className":"grid grid-cols-[20px_1fr] gap-1.5 items-baseline py-3 border-b border-rule text-[13.5px] text-ink-soft"} -->
@@ -147,7 +147,7 @@
 
 				<!-- wp:list {"className":"border-t border-rule"} -->
 				<ul class="wp-block-list border-t border-rule"><!-- wp:list-item {"className":"grid grid-cols-[20px_1fr] gap-1.5 items-baseline py-3 border-b border-rule text-[13.5px] text-ink-soft"} -->
-				<li class="grid grid-cols-[20px_1fr] gap-1.5 items-baseline py-3 border-b border-rule text-[13.5px] text-ink-soft"><span aria-hidden="true" class="font-serif font-medium text-spine text-[15px]">+</span><span>4 PRECICE internal nail implants</span></li>
+				<li class="grid grid-cols-[20px_1fr] gap-1.5 items-baseline py-3 border-b border-rule text-[13.5px] text-ink-soft"><span aria-hidden="true" class="font-serif font-medium text-spine text-[15px]">+</span><span>4 PRECICE MAX internal nail implants</span></li>
 				<!-- /wp:list-item --><!-- wp:list-item {"className":"grid grid-cols-[20px_1fr] gap-1.5 items-baseline py-3 border-b border-rule text-[13.5px] text-ink-soft"} -->
 				<li class="grid grid-cols-[20px_1fr] gap-1.5 items-baseline py-3 border-b border-rule text-[13.5px] text-ink-soft"><span aria-hidden="true" class="font-serif font-medium text-spine text-[15px]">+</span><span>All hospitalization/operating room across both stays</span></li>
 				<!-- /wp:list-item --><!-- wp:list-item {"className":"grid grid-cols-[20px_1fr] gap-1.5 items-baseline py-3 border-b border-rule text-[13.5px] text-ink-soft"} -->
@@ -168,13 +168,11 @@
 		<!-- wp:group {"layout":{"type":"default"},"className":"js-reveal pt-8 flex flex-col lg:flex-row lg:justify-between lg:items-center gap-5"} -->
 		<div class="wp-block-group js-reveal pt-8 flex flex-col lg:flex-row lg:justify-between lg:items-center gap-5">
 			<!-- wp:paragraph {"className":"max-w-[60ch] text-[13px] text-muted"} -->
-			<p class="max-w-[60ch] text-[13px] text-muted">Financing available through CareCredit. As low as $1,200/month with approved credit.</p>
+			<p class="max-w-[60ch] text-[13px] text-muted">Financing options are available. We will walk you through them during your consultation.</p>
 			<!-- /wp:paragraph -->
 
 			<!-- wp:buttons -->
-			<div class="wp-block-buttons"><!-- wp:button -->
-			<div class="wp-block-button"><a class="wp-block-button__link wp-element-button group self-start lg:self-auto inline-flex items-center gap-3 px-5 py-3.5 bg-spine text-paper uppercase tracking-wide text-[12px] font-medium hover:bg-spine-deep transition-colors" href="/limb-lengthening-pricing-options/">View Limb Lengthening Surgery Costs<span class="font-serif italic text-[17px] transition-transform group-hover:translate-x-1" aria-hidden="true">→</span></a></div>
-			<!-- /wp:button --></div>
+			<div class="wp-block-buttons"><!-- wp:pll/cta {"label":"View Limb Lengthening Surgery Costs","url":"/limb-lengthening-pricing-options/","linkClass":"wp-block-button__link wp-element-button group self-start lg:self-auto inline-flex items-center gap-3 px-5 py-3.5 bg-spine text-paper uppercase tracking-wide text-[12px] font-medium hover:bg-spine-deep transition-colors","arrowClass":"font-serif italic text-[17px] transition-transform group-hover:translate-x-1"} /--></div>
 			<!-- /wp:buttons -->
 		</div>
 		<!-- /wp:group -->

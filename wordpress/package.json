@@ -28,7 +28,8 @@
     "verify:seo-pages": "node scripts/verify-render-reentrancy.mjs && node scripts/verify-seo-page-authoring.mjs && node scripts/verify-structured-seo-pages.mjs && node scripts/verify-seo-page-comparison-integration.mjs",
     "verify:marketing-drafts": "node scripts/verify-marketing-drafts.mjs",
     "verify:seo-pages:live": "node scripts/verify-seo-pages-live.mjs",
-    "verify:cannibalization": "node scripts/verify-cannibalization.mjs"
+    "verify:cannibalization": "node scripts/verify-cannibalization.mjs",
+    "verify:copy-revisions": "node scripts/verify-copy-revisions.mjs"
   },
   "devDependencies": {
     "@wordpress/scripts": "^30.7.0",

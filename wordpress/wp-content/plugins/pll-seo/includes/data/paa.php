@@ -112,7 +112,13 @@ function pll_seo_paa_all() {
 			),
 			array(
 				'q' => 'How do people pay for limb lengthening surgery?',
-				'a' => 'Most patients pay through a combination of savings and medical financing. Premier Limb Lengthening offers financing through SoFi and CareCredit, with monthly payments starting as low as $1,200 for qualified applicants. Payment plans are structured before the surgery date so patients have clarity on their financial commitment before proceeding.',
+				// No payment figure and no APR here. The "as low as $1,200"
+				// claim was removed 2026-09-07 at the owner's request, pending
+				// approved CareCredit material. This answer is published twice,
+				// as visible copy and as FAQPage JSON-LD, so a financing term
+				// stated here is a term advertised in a search result. Do not
+				// reinstate one without written sign-off.
+				'a' => 'Most patients pay through a combination of savings and medical financing. Premier Limb Lengthening works with financing partners including SoFi and CareCredit, and terms depend on the applicant and the lender. Payment plans are structured before the surgery date so patients have clarity on their financial commitment before proceeding.',
 			),
 			array(
 				'q' => 'Is cosmetic limb lengthening tax deductible?',

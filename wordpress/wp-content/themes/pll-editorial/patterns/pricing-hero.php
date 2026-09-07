@@ -10,7 +10,7 @@
  */
 
 ?>
-<!-- wp:group {"tagName":"section","layout":{"type":"default"},"templateLock":"contentOnly","lock":{"move":true,"remove":true},"className":"bg-paper-off border-b border-ink pt-28 lg:pt-36 pb-16 lg:pb-20"} -->
+<!-- wp:group {"tagName":"section","layout":{"type":"default"},"templateLock":"contentOnly","className":"bg-paper-off border-b border-ink pt-28 lg:pt-36 pb-16 lg:pb-20"} -->
 <section class="wp-block-group bg-paper-off border-b border-ink pt-28 lg:pt-36 pb-16 lg:pb-20">
 	<!-- wp:group {"layout":{"type":"default"},"className":"mx-auto max-w-wrap px-6 lg:px-12 grid grid-cols-12 gap-6 lg:gap-8"} -->
 	<div class="wp-block-group mx-auto max-w-wrap px-6 lg:px-12 grid grid-cols-12 gap-6 lg:gap-8">
@@ -21,7 +21,7 @@
 			<!-- /wp:paragraph -->
 
 			<!-- wp:heading {"level":1,"className":"mt-5 font-serif font-normal tracking-[-0.025em] text-ink leading-[0.95] max-w-[18ch] text-[clamp(44px,7.2vw,116px)]"} -->
-			<h1 class="wp-block-heading mt-5 font-serif font-normal tracking-[-0.025em] text-ink leading-[0.95] max-w-[18ch] text-[clamp(44px,7.2vw,116px)]">Limb Lengthening Cost, <em class="italic text-spine">priced like a partner.</em></h1>
+			<h1 class="wp-block-heading mt-5 font-serif font-normal tracking-[-0.025em] text-ink leading-[0.95] max-w-[18ch] text-[clamp(44px,7.2vw,116px)]">Limb Lengthening <em class="italic text-spine">Cost.</em></h1>
 			<!-- /wp:heading -->
 		</div>
 		<!-- /wp:group -->

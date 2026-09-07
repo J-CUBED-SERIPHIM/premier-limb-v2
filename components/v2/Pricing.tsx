@@ -14,7 +14,7 @@ export function Pricing() {
     <section id="pricing" className="bg-paper-off py-20 lg:py-28">
       <div className="mx-auto max-w-wrap px-6 lg:px-12">
         <Reveal>
-          <header className="pb-8 mb-6 border-b border-ink">
+          <header className="pb-8 mb-6">
             <span className="eyebrow mb-4">Transparent Pricing</span>
             <h2
               className="mt-4 font-serif font-normal tracking-[-0.02em] text-ink leading-[0.98]"
@@ -88,8 +88,8 @@ export function Pricing() {
 
         <Reveal className="pt-8 flex flex-col lg:flex-row lg:justify-between lg:items-center gap-5">
           <p className="max-w-[60ch] text-[13px] text-muted">
-            Financing available through CareCredit. As low as $1,200/month with
-            approved credit.
+            Financing options are available. We will walk you through them
+            during your consultation.
           </p>
           <a
             href="/limb-lengthening-pricing-options"

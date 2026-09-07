@@ -2,7 +2,9 @@ import { Reveal } from "../Reveal";
 
 /**
  * Financing — spine-blue editorial callout. Two financing partners (SoFi and
- * CareCredit), each opening in a new tab, plus indicative-cost stats.
+ * CareCredit), each opening in a new tab. The indicative monthly and 0% intro
+ * stats were removed 2026-09-07 at the owner's request, pending approved
+ * CareCredit material. Do not reinstate a payment figure or an APR without it.
  */
 export function Financing() {
   return (
@@ -20,26 +22,6 @@ export function Financing() {
             Pay it down over time, <em className="italic" style={{ color: "#F4D88A" }}>not all at once.</em>
           </h2>
 
-          <div className="mt-10 grid grid-cols-2 gap-0 border-t border-white/25 max-w-[460px]">
-            <div className="py-6 pr-5 border-r border-white/15">
-              <div className="font-serif text-[40px] lg:text-[52px] leading-none tracking-[-0.02em]">
-                <em style={{ color: "#F4D88A" }} className="italic">$1,200</em>
-                <span className="text-[24px] lg:text-[28px] align-baseline">/mo</span>
-              </div>
-              <div className="mt-2 font-mono uppercase tracking-[0.18em] text-[10.5px] text-paper/80">
-                Indicative monthly
-              </div>
-            </div>
-            <div className="py-6 pl-5">
-              <div className="font-serif text-[40px] lg:text-[52px] leading-none tracking-[-0.02em]">
-                <em style={{ color: "#F4D88A" }} className="italic">0&nbsp;%</em>
-                <span className="text-[24px] lg:text-[28px] align-baseline">&nbsp;intro</span>
-              </div>
-              <div className="mt-2 font-mono uppercase tracking-[0.18em] text-[10.5px] text-paper/80">
-                With approved credit
-              </div>
-            </div>
-          </div>
         </Reveal>
 
         <Reveal

@@ -16,7 +16,7 @@ export function PricingPlans() {
                 className="mt-4 font-serif font-normal tracking-[-0.02em] text-ink leading-[0.98]"
                 style={{ fontSize: "clamp(36px, 5.4vw, 76px)" }}
               >
-                Three procedures. <em className="italic text-spine">One transparent price.</em>
+                Three procedures. <em className="italic text-spine">PRECICE MAX cost.</em>
               </h2>
             </div>
             <p className="hidden lg:block col-span-4 text-[14.5px] leading-[1.65] text-ink-soft">

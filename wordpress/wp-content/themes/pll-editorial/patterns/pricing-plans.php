@@ -24,7 +24,7 @@
 				<!-- /wp:paragraph -->
 
 				<!-- wp:heading {"level":2,"className":"mt-4 font-serif font-normal tracking-[-0.02em] text-ink leading-[0.98] text-[clamp(36px,5.4vw,76px)]"} -->
-				<h2 class="wp-block-heading mt-4 font-serif font-normal tracking-[-0.02em] text-ink leading-[0.98] text-[clamp(36px,5.4vw,76px)]">Three procedures. <em class="italic text-spine">One transparent price.</em></h2>
+				<h2 class="wp-block-heading mt-4 font-serif font-normal tracking-[-0.02em] text-ink leading-[0.98] text-[clamp(36px,5.4vw,76px)]">Three procedures. <em class="italic text-spine">PRECICE MAX cost.</em></h2>
 				<!-- /wp:heading -->
 			</div>
 			<!-- /wp:group -->
@@ -65,7 +65,7 @@
 
 				<!-- wp:list {"className":"border-t border-rule"} -->
 				<ul class="wp-block-list border-t border-rule"><!-- wp:list-item {"className":"grid grid-cols-[20px_1fr] gap-1.5 items-baseline py-3 border-b border-rule text-[13.5px] text-ink-soft last:border-b-0"} -->
-				<li class="grid grid-cols-[20px_1fr] gap-1.5 items-baseline py-3 border-b border-rule text-[13.5px] text-ink-soft last:border-b-0"><span aria-hidden="true" class="font-serif font-medium text-spine text-[15px]">+</span><span>2 PRECICE 4th Generation internal nail implants</span></li>
+				<li class="grid grid-cols-[20px_1fr] gap-1.5 items-baseline py-3 border-b border-rule text-[13.5px] text-ink-soft last:border-b-0"><span aria-hidden="true" class="font-serif font-medium text-spine text-[15px]">+</span><span>2 PRECICE MAX internal nail implants</span></li>
 				<!-- /wp:list-item --><!-- wp:list-item {"className":"grid grid-cols-[20px_1fr] gap-1.5 items-baseline py-3 border-b border-rule text-[13.5px] text-ink-soft last:border-b-0"} -->
 				<li class="grid grid-cols-[20px_1fr] gap-1.5 items-baseline py-3 border-b border-rule text-[13.5px] text-ink-soft last:border-b-0"><span aria-hidden="true" class="font-serif font-medium text-spine text-[15px]">+</span><span>All hospitalization/operating room</span></li>
 				<!-- /wp:list-item --><!-- wp:list-item {"className":"grid grid-cols-[20px_1fr] gap-1.5 items-baseline py-3 border-b border-rule text-[13.5px] text-ink-soft last:border-b-0"} -->
@@ -107,7 +107,7 @@
 
 				<!-- wp:list {"className":"border-t border-rule"} -->
 				<ul class="wp-block-list border-t border-rule"><!-- wp:list-item {"className":"grid grid-cols-[20px_1fr] gap-1.5 items-baseline py-3 border-b border-rule text-[13.5px] text-ink-soft last:border-b-0"} -->
-				<li class="grid grid-cols-[20px_1fr] gap-1.5 items-baseline py-3 border-b border-rule text-[13.5px] text-ink-soft last:border-b-0"><span aria-hidden="true" class="font-serif font-medium text-spine text-[15px]">+</span><span>2 PRECICE 4th Generation internal nail implants</span></li>
+				<li class="grid grid-cols-[20px_1fr] gap-1.5 items-baseline py-3 border-b border-rule text-[13.5px] text-ink-soft last:border-b-0"><span aria-hidden="true" class="font-serif font-medium text-spine text-[15px]">+</span><span>2 PRECICE MAX internal nail implants</span></li>
 				<!-- /wp:list-item --><!-- wp:list-item {"className":"grid grid-cols-[20px_1fr] gap-1.5 items-baseline py-3 border-b border-rule text-[13.5px] text-ink-soft last:border-b-0"} -->
 				<li class="grid grid-cols-[20px_1fr] gap-1.5 items-baseline py-3 border-b border-rule text-[13.5px] text-ink-soft last:border-b-0"><span aria-hidden="true" class="font-serif font-medium text-spine text-[15px]">+</span><span>All hospitalization/operating room</span></li>
 				<!-- /wp:list-item --><!-- wp:list-item {"className":"grid grid-cols-[20px_1fr] gap-1.5 items-baseline py-3 border-b border-rule text-[13.5px] text-ink-soft last:border-b-0"} -->
@@ -151,7 +151,7 @@
 
 				<!-- wp:list {"className":"border-t border-rule"} -->
 				<ul class="wp-block-list border-t border-rule"><!-- wp:list-item {"className":"grid grid-cols-[20px_1fr] gap-1.5 items-baseline py-3 border-b border-rule text-[13.5px] text-ink-soft last:border-b-0"} -->
-				<li class="grid grid-cols-[20px_1fr] gap-1.5 items-baseline py-3 border-b border-rule text-[13.5px] text-ink-soft last:border-b-0"><span aria-hidden="true" class="font-serif font-medium text-spine text-[15px]">+</span><span>4 PRECICE internal nail implants</span></li>
+				<li class="grid grid-cols-[20px_1fr] gap-1.5 items-baseline py-3 border-b border-rule text-[13.5px] text-ink-soft last:border-b-0"><span aria-hidden="true" class="font-serif font-medium text-spine text-[15px]">+</span><span>4 PRECICE MAX internal nail implants</span></li>
 				<!-- /wp:list-item --><!-- wp:list-item {"className":"grid grid-cols-[20px_1fr] gap-1.5 items-baseline py-3 border-b border-rule text-[13.5px] text-ink-soft last:border-b-0"} -->
 				<li class="grid grid-cols-[20px_1fr] gap-1.5 items-baseline py-3 border-b border-rule text-[13.5px] text-ink-soft last:border-b-0"><span aria-hidden="true" class="font-serif font-medium text-spine text-[15px]">+</span><span>All hospitalization/operating room across both stays</span></li>
 				<!-- /wp:list-item --><!-- wp:list-item {"className":"grid grid-cols-[20px_1fr] gap-1.5 items-baseline py-3 border-b border-rule text-[13.5px] text-ink-soft last:border-b-0"} -->
