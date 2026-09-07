@@ -5,7 +5,7 @@
   "description": "WordPress recreation of premierlimblengthening.com — FSE block theme + plugins + content seed. Lives only on the wordpress branch; never deployed to Netlify.",
   "type": "module",
   "scripts": {
-    "dev": "wp-playground-cli server --blueprint=./blueprint.json --blueprint-may-read-adjacent-files --mount=./wp-content/themes/pll-editorial:/wordpress/wp-content/themes/pll-editorial --mount=./wp-content/plugins/pll-seo:/wordpress/wp-content/plugins/pll-seo --mount=./wp-content/plugins/pll-forms:/wordpress/wp-content/plugins/pll-forms --mount=./content:/wordpress/pll-seed --port=9400",
+    "dev": "wp-playground-cli server --blueprint=./blueprint.json --blueprint-may-read-adjacent-files --mount=./wp-content/themes/pll-editorial:/wordpress/wp-content/themes/pll-editorial --mount=./wp-content/plugins/pll-seo:/wordpress/wp-content/plugins/pll-seo --mount=./wp-content/plugins/pll-forms:/wordpress/wp-content/plugins/pll-forms --mount=./wp-content/plugins/pll-seo-pages:/wordpress/wp-content/plugins/pll-seo-pages --mount=./content:/wordpress/pll-seed --port=9400",
     "build:css": "tailwindcss -c ./wp-content/themes/pll-editorial/tailwind.config.js -i ./wp-content/themes/pll-editorial/src/css/tailwind.css -o ./wp-content/themes/pll-editorial/assets/css/pll.css --minify",
     "watch:css": "npm run build:css -- --watch",
     "build:blocks": "wp-scripts build --experimental-modules --webpack-src-dir=wp-content/themes/pll-editorial/src/blocks --output-path=wp-content/themes/pll-editorial/build",
@@ -22,11 +22,17 @@
     "smoke-test": "node scripts/smoke-test.mjs",
     "verify:sitemap": "node scripts/verify-sitemap.mjs",
     "verify:seo-meta": "node scripts/verify-seo-meta.mjs",
-    "verify:paa": "node scripts/verify-paa.mjs"
+    "verify:paa": "node scripts/verify-paa.mjs",
+    "verify:curve-bridge": "node scripts/verify-curve-bridge.mjs",
+    "verify:curve-bridge:live": "node scripts/verify-curve-bridge-live.mjs",
+    "verify:seo-pages": "node scripts/verify-render-reentrancy.mjs && node scripts/verify-seo-page-authoring.mjs && node scripts/verify-structured-seo-pages.mjs && node scripts/verify-seo-page-comparison-integration.mjs",
+    "verify:marketing-drafts": "node scripts/verify-marketing-drafts.mjs",
+    "verify:seo-pages:live": "node scripts/verify-seo-pages-live.mjs",
+    "verify:cannibalization": "node scripts/verify-cannibalization.mjs"
   },
   "devDependencies": {
     "@wordpress/scripts": "^30.7.0",
-    "@wp-playground/cli": "^3.1.38",
+    "@wp-playground/cli": "^3.1.51",
     "archiver": "^7.0.1",
     "autoprefixer": "^10.4.20",
     "fast-glob": "^3.3.2",

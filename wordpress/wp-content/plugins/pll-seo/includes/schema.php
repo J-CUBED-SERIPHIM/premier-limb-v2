@@ -41,6 +41,15 @@ function pll_seo_site_graph() {
 					'postalCode'      => '91786',
 					'addressCountry'  => 'US',
 				),
+				// Entity disambiguation for surgeon-name queries (cannibalization
+				// audit A6, owner-approved 2026-08-27). "dr basmajian" and its
+				// variants split ~50/50 between the homepage and /dr-basmajian/
+				// because both carry the name prominently and neither declared
+				// which one is the canonical Person. Referencing the Physician
+				// by @id (emitted in full on /dr-basmajian/) resolves the graph
+				// to one entity without a title fight on the homepage.
+				'founder'            => array( '@id' => PLL_SEO_ORIGIN . '/dr-basmajian#physician' ),
+				'employee'           => array( '@id' => PLL_SEO_ORIGIN . '/dr-basmajian#physician' ),
 				'parentOrganization' => array(
 					'@type' => 'Organization',
 					'name'  => 'Premier Orthopaedic & Trauma Specialists',
@@ -174,6 +183,91 @@ function pll_seo_faqpage_from( $qas ) {
  */
 function pll_seo_faq_schema() {
 	return pll_seo_faqpage_from( pll_seo_faqs() );
+}
+
+/**
+ * Collapse rendered block HTML into the published text represented by schema.
+ *
+ * @param string $html Rendered block HTML.
+ * @return string
+ */
+function pll_seo_schema_visible_text( $html ) {
+	$text = html_entity_decode( wp_strip_all_tags( $html ), ENT_QUOTES, get_bloginfo( 'charset' ) );
+	return trim( (string) preg_replace( '/\s+/', ' ', $text ) );
+}
+
+/**
+ * Recursively collect only visible PLL FAQ items from ordinary block content.
+ *
+ * The question belongs to the FAQ item attribute. Its answer is rendered from
+ * the item's real inner blocks, then reduced to the text patients can read.
+ * Empty or malformed rows do not earn schema entries.
+ *
+ * @param array<int, array<string, mixed>> $blocks Parsed Gutenberg blocks.
+ * @return array<int, array{q: string, a: string}>
+ */
+function pll_seo_visible_faqs_from_blocks( $blocks ) {
+	$faqs = array();
+	foreach ( $blocks as $block ) {
+		if ( ! is_array( $block ) ) {
+			continue;
+		}
+		if ( 'pll/faq-item' === ( $block['blockName'] ?? '' ) ) {
+			$question    = pll_seo_schema_visible_text( (string) ( $block['attrs']['question'] ?? '' ) );
+			$answer_html = '';
+			foreach ( $block['innerBlocks'] ?? array() as $inner_block ) {
+				$answer_html .= render_block( $inner_block );
+			}
+			$answer = pll_seo_schema_visible_text( $answer_html );
+			if ( '' !== $question && '' !== $answer ) {
+				$faqs[] = array(
+					'q' => $question,
+					'a' => $answer,
+				);
+			}
+			continue;
+		}
+		if ( ! empty( $block['innerBlocks'] ) ) {
+			$faqs = array_merge( $faqs, pll_seo_visible_faqs_from_blocks( $block['innerBlocks'] ) );
+		}
+	}
+	return $faqs;
+}
+
+/**
+ * Existing page-level FAQ sources remain the single owner of their schema.
+ *
+ * @param string $path Root-relative page path.
+ * @return bool
+ */
+function pll_seo_has_hard_coded_faq_owner( $path ) {
+	if ( pll_seo_paa( $path ) ) {
+		return true;
+	}
+	return in_array(
+		$path,
+		array(
+			'/',
+			'/limb-lengthening-pricing-options/',
+			'/evaluate-your-surgeon/',
+		),
+		true
+	);
+}
+
+/**
+ * Build FAQPage schema from visible blocks for an indexable, ordinary page.
+ *
+ * @param WP_Post $post Current page.
+ * @param string  $path Root-relative page path.
+ * @return array|null
+ */
+function pll_seo_visible_faq_schema_for_page( $post, $path ) {
+	if ( ! $post instanceof WP_Post || pll_seo_is_noindex( $post->ID ) || pll_seo_has_hard_coded_faq_owner( $path ) ) {
+		return null;
+	}
+	$faqs = pll_seo_visible_faqs_from_blocks( parse_blocks( $post->post_content ) );
+	return $faqs ? pll_seo_faqpage_from( $faqs ) : null;
 }
 
 /**
@@ -720,6 +814,12 @@ function pll_seo_collection( $name, $posts ) {
 function pll_seo_schemas_for_view() {
 	$schemas = array( pll_seo_site_graph() );
 
+	// Noindex items remain usable pages, but publish no page-specific schema,
+	// including FAQPage. The organization graph remains site-wide.
+	if ( is_singular() && pll_seo_is_noindex() ) {
+		return $schemas;
+	}
+
 	if ( is_front_page() ) {
 		$schemas[] = pll_seo_faq_schema();
 		$schemas[] = pll_seo_home_procedure();
@@ -883,6 +983,10 @@ function pll_seo_schemas_for_view() {
 				if ( $sub_qas ) {
 					$schemas[] = pll_seo_faqpage_from( $sub_qas );
 				}
+				$visible_faq_schema = pll_seo_visible_faq_schema_for_page( $post, $path );
+				if ( $visible_faq_schema ) {
+					$schemas[] = $visible_faq_schema;
+				}
 				return $schemas;
 			}
 		} elseif ( in_array( $path, array( '/privacy/', '/terms/', '/accessibility/' ), true ) ) {
@@ -895,6 +999,11 @@ function pll_seo_schemas_for_view() {
 				'isPartOf'   => array( '@id' => PLL_SEO_ORIGIN . '/#website' ),
 				'publisher'  => array( '@id' => PLL_SEO_ORIGIN . '/#organization' ),
 			);
+		}
+
+		$visible_faq_schema = pll_seo_visible_faq_schema_for_page( $post, $path );
+		if ( $visible_faq_schema ) {
+			$schemas[] = $visible_faq_schema;
 		}
 
 		$schemas[] = pll_seo_breadcrumb(

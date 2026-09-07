@@ -19,7 +19,7 @@
  */
 import { spawnSync, spawn } from "node:child_process";
 import net from "node:net";
-import { mkdir, rm, writeFile } from "node:fs/promises";
+import { mkdir, readFile, rm, writeFile } from "node:fs/promises";
 import { createWriteStream } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
@@ -156,17 +156,20 @@ console.log("Building theme + plugin zips…");
 const themeDir = path.join(SMOKE_DIR, "wp-content", "themes", "pll-editorial");
 const themeSeoDir = path.join(SMOKE_DIR, "wp-content", "plugins", "pll-seo");
 const themeFormsDir = path.join(SMOKE_DIR, "wp-content", "plugins", "pll-forms");
+const seoPagesDir = path.join(SMOKE_DIR, "wp-content", "plugins", "pll-seo-pages");
 
 const themeZip = path.join(SMOKE_DIR, "pll-editorial.zip");
 const seoZip = path.join(SMOKE_DIR, "pll-seo.zip");
 const formsZip = path.join(SMOKE_DIR, "pll-forms.zip");
+const seoPagesZip = path.join(SMOKE_DIR, "pll-seo-pages.zip");
 
 await Promise.all([
 	zipDir(themeDir, themeZip),
 	zipDir(themeSeoDir, seoZip),
 	zipDir(themeFormsDir, formsZip),
+	zipDir(seoPagesDir, seoPagesZip),
 ]);
-console.log("  ✓ pll-editorial.zip, pll-seo.zip, pll-forms.zip");
+console.log("  ✓ pll-editorial.zip, pll-seo.zip, pll-forms.zip, pll-seo-pages.zip");
 
 // ── 4. write smoke blueprint ─────────────────────────────────────────────────
 
@@ -178,6 +181,7 @@ const blueprint = {
 	features: { networking: false },
 	constants: {
 		WP_DEBUG: true,
+		PLL_SEO_PAGES_SEED_DEMO: true,
 		PLL_GHL_WEBHOOK_URL: "https://example.invalid/smoke-test-dummy",
 	},
 	steps: [
@@ -206,6 +210,11 @@ const blueprint = {
 		{
 			step: "installPlugin",
 			pluginData: { resource: "bundled", path: "./pll-forms.zip" },
+			options: { activate: true },
+		},
+		{
+			step: "installPlugin",
+			pluginData: { resource: "bundled", path: "./pll-seo-pages.zip" },
 			options: { activate: true },
 		},
 		{
@@ -381,6 +390,9 @@ const ROUTES = [
 	["/evaluate-your-surgeon/", "Surgeon"],
 	["/your-surgery/", "How It Works"],
 	["/your-surgery/will-limb-lengthening-hurt/", "Hurt"],
+	["/seo-pattern-demo/", "How Much Taller"],
+	["/seo-image-led-demo/", "How Much Taller"],
+	["/seo-structured-demo/", "How Much Taller"],
 	["/privacy/", "Privacy"],
 	["/terms/", "Terms"],
 	["/accessibility/", "Accessibility"],
@@ -446,6 +458,61 @@ for (const [route, expectTitle] of ROUTES) {
 	}
 }
 
+// ── 5b. retired URLs must 301, not serve ────────────────────────────────────
+//
+// A consolidation ticket retires a duplicate page by mapping it in
+// pll-seo/includes/redirects.php. The post deliberately stays in the database
+// (WXR re-import fidelity), so it would still resolve 200 on its own, and the
+// map's old 404-only guard could not have stopped it. Asserting the FINAL URL
+// rather than just the rendered title is what makes this a redirect test: a
+// title check alone would also pass if the duplicate simply kept serving under
+// the destination's name.
+// A4's redirect is gated on its content merge (PLL_SEO_A4_FIXATION_MERGED in
+// pll-seo/includes/redirects.php), so the expectation is read from the build
+// under test rather than hardcoded here. Asserting a redirect that the shipped
+// code deliberately disables would just teach everyone to ignore this check.
+const a4Gate = /define\(\s*'PLL_SEO_A4_FIXATION_MERGED'\s*,\s*true\s*\)/.test(
+	await readFile(
+		path.join(SMOKE_DIR, "wp-content/plugins/pll-seo/includes/redirects.php"),
+		"utf8"
+	).catch(() => "")
+);
+
+const REDIRECTS = a4Gate
+	? [
+			[
+				"/fixation-methods-in-limb-lengthening-internal-vs-external/",
+				"/your-surgery/external-internal-lengthening/",
+			],
+		]
+	: [];
+
+if (!a4Gate) {
+	console.log(
+		"\n  ⓘ A4 fixation redirect is gated off pending its content merge — not asserted."
+	);
+}
+
+if (!instanceDied && REDIRECTS.length) {
+	console.log("\nChecking retired URLs redirect…\n");
+	for (const [from, to] of REDIRECTS) {
+		try {
+			await page.goto(BASE + from, { waitUntil: "domcontentloaded", timeout: 30000 });
+			const landed = new URL(page.url()).pathname;
+			if (landed === to) {
+				console.log(`  ✓ ${from} → ${landed}`);
+				passed++;
+			} else {
+				console.error(`  ✗ ${from} — landed on ${landed}, expected ${to}`);
+				failed++;
+			}
+		} catch (e) {
+			console.error(`  ✗ ${from} — ${e.message.split("\n")[0]}`);
+			failed++;
+		}
+	}
+}
+
 await browser.close();
 
 // ── 6a. teardown that actually releases the port ─────────────────────────────
@@ -497,7 +564,7 @@ process.on("unhandledRejection", (err) => {
 
 if (process.env.PLL_SMOKE_KEEP) {
 	console.log(`
-${passed}/${ROUTES.length} routes passed the smoke test`);
+${passed}/${ROUTES.length + REDIRECTS.length} checks passed the smoke test`);
 	if (failed > 0) console.error(`✗ ${failed} route(s) returned unexpected responses`);
 	console.log(`
 PLL_SMOKE_KEEP set — holding the PACKAGED instance on ${BASE}`);
@@ -511,7 +578,7 @@ PLL_SMOKE_KEEP set — holding the PACKAGED instance on ${BASE}`);
 
 releaseInstance();
 
-console.log(`\n${passed}/${ROUTES.length} routes passed the smoke test`);
+console.log(`\n${passed}/${ROUTES.length + REDIRECTS.length} checks passed the smoke test`);
 
 if (instanceDied) {
 	console.error(`\n✗ Smoke test INCONCLUSIVE — the Playground died mid-run, so nothing was proven. Re-run.`);

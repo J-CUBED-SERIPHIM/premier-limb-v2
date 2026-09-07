@@ -299,7 +299,13 @@ $pll_home_id = pll_seed_page(
 );
 
 // Posts page — content is ignored by WP (the home.html template renders the loop).
-$pll_blog_id = pll_seed_page( 'blog', 'Blog', '' );
+// A short editor-only note keeps the block editor from opening the empty-page
+// "Choose a pattern" modal and tells editors where the real layout lives.
+$pll_blog_id = pll_seed_page(
+	'blog',
+	'Blog',
+	"<!-- wp:paragraph -->\n<p>This page lists the latest articles automatically. Nothing written here appears on the site. To change the listing layout, edit the Blog Home template under Appearance \xE2\x86\x92 Editor \xE2\x86\x92 Templates.</p>\n<!-- /wp:paragraph -->"
+);
 
 // Marketing pages — composed from theme patterns (single source of truth).
 pll_seed_page(
@@ -327,6 +333,12 @@ pll_seed_page(
 // No FinalCta on consult (the page goes straight to the footer in Next).
 pll_seed_page( 'consult', 'Contact', pll_compose_patterns( array( 'pll/consult-page' ) ) );
 
+// Booking is a separate flow from contact (owner request 2026-07): the
+// embedded GHL calendar lives here, and the site-wide "Schedule Consultation"
+// button (pll_site_info cta_url) points at this page. No FinalCta either —
+// the page IS the conversion.
+pll_seed_page( 'book-a-consultation', 'Book a Consultation', pll_compose_patterns( array( 'pll/booking-page' ) ) );
+
 // Section order per app/limb-lengthening-pricing-options/page.tsx:
 // hero → plans → add-ons → included/excluded → financing. No FinalCta.
 pll_seed_page(
@@ -343,14 +355,297 @@ pll_seed_page(
 	)
 );
 
+// SEO pillar pages (PLL_SEO_Audit_Report.docx). Pattern-composed like the
+// other marketing pages. They own the consumer head terms "height surgery"
+// and "leg lengthening surgery" and are reached through the internal-link
+// map (homepage, pricing, your-surgery, how-much-taller) — intentionally NOT
+// added to the primary nav to avoid diluting it and to keep the hub-and-spoke
+// relationship with /your-surgery/ free of cannibalization.
+pll_seed_page(
+	'height-surgery',
+	'Height Surgery',
+	pll_compose_patterns( array( 'pll/height-surgery', 'pll/final-cta' ) )
+);
+pll_seed_page(
+	'leg-lengthening-surgery',
+	'Leg Lengthening Surgery',
+	pll_compose_patterns( array( 'pll/leg-lengthening-surgery', 'pll/final-cta' ) )
+);
+
+// Evaluate Your Surgeon — the interactive surgeon-evaluation guide + scoring
+// tool. Composed from a single full-page pattern (its own final CTA lives in
+// the Why-Premier section, so no shared pll/final-cta is appended). Reached
+// from the primary nav + footer Resources.
+pll_seed_page(
+	'evaluate-your-surgeon',
+	'Evaluate Your Surgeon',
+	pll_compose_patterns( array( 'pll/evaluate-page' ) )
+);
+
+// Local authoring demonstration only. It resolves an ordinary (unsynced)
+// pattern into a normal page, so duplicating or editing either page never
+// changes the other. It is deliberately opt-in: normal production and HIPAA
+// setup must never publish a duplicate of an indexed source page.
+function pll_seed_seo_pattern_demo() {
+	$pll_seo_pattern_demo_content = "<!-- Source: How Much Taller Can I Get With Limb Lengthening? -->\n"
+		. pll_compose_patterns( array( 'pll/seo-landing-page' ) );
+	return pll_seed_page(
+		'seo-pattern-demo',
+		'SEO Pattern Demo: How Much Taller Can I Get With Limb Lengthening?',
+		$pll_seo_pattern_demo_content,
+		array(
+			'meta_input' => array(
+				'_pll_seo_title'       => 'How Much Taller Can I Get With Limb Lengthening?',
+				'_pll_seo_description' => 'How much height limb lengthening can safely add, why the range is limited, and how femur and tibia procedures differ.',
+				'_pll_canonical_url'   => '',
+				'_pll_robots_noindex'  => 1,
+			),
+		)
+	);
+}
+
+function pll_seed_seo_image_led_demo() {
+	$pll_seo_image_led_demo_content = "<!-- Source: How Much Taller Can I Get With Limb Lengthening? -->\n"
+		. pll_compose_patterns( array( 'pll/seo-image-led-landing-page' ) );
+	return pll_seed_page(
+		'seo-image-led-demo',
+		'SEO Image-Led Demo: How Much Taller Can I Get With Limb Lengthening?',
+		$pll_seo_image_led_demo_content,
+		array(
+			'meta_input' => array(
+				'_pll_seo_title'       => 'How Much Taller Can You Get? Up to 6 Inches',
+				'_pll_seo_description' => 'Most patients gain 2 to 6 inches depending on whether the femur, the tibia, or both are lengthened. See the realistic range for each segment.',
+				'_pll_canonical_url'   => '',
+				'_pll_robots_noindex'  => 1,
+			),
+		)
+	);
+}
+
+if ( ( defined( 'PLL_SEO_PAGES_SEED_DEMO' ) && PLL_SEO_PAGES_SEED_DEMO === true ) || wp_get_environment_type() === 'local' ) {
+	pll_seed_seo_pattern_demo();
+	pll_seed_seo_image_led_demo();
+}
+
 /**
- * 3b) Authors — restore the legacy /author/<nicename>/ archives.
+ * 3a-bis) Marketing sprint pages — SEEDED AS DRAFTS, NEVER PUBLISHED.
+ *
+ * Four build-ready pages from the J Cubed marketing sprint (Notion "PLL
+ * Marketing Sprint — 12-Page Content Build"). The marketing team still owes
+ * several rounds of edits and the pages are gated on Dr. B, Legal, and Jaime
+ * sign-offs, so every one of them lands unpublished.
+ *
+ * Three independent guards keep them off the public site:
+ *   1. post_status = draft, so they are not publicly routable and core leaves
+ *      them out of the sitemap.
+ *   2. _pll_robots_noindex = 1, so even an accidental publish stays noindex.
+ *   3. Visible "Fill required" asides in the body, so nobody can publish one
+ *      without first seeing what a human still owes.
+ *
+ * Publishing is a deliberate act: flip the status in the editor, resolve and
+ * delete every fill note, then clear _pll_robots_noindex. Do not add these to
+ * nav or the sitemap until that happens.
+ *
+ * Note the seeding contract: pll_seed_page() only writes when the page does
+ * not already exist (absent PLL_SEED_FORCE), so a re-run never clobbers the
+ * marketing team's edits. Editing the pattern file after the first seed will
+ * NOT change a seeded page.
+ *
+ * @return void
+ */
+function pll_marketing_sprint_body( $slug ) {
+	$path = __DIR__ . '/pages/' . $slug . '.html';
+	if ( ! is_readable( $path ) ) {
+		// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
+		error_log( 'pll seed: marketing page body missing: ' . $path );
+		return '';
+	}
+
+	$info = function_exists( 'pll_site_info' ) ? pll_site_info() : array();
+
+	// The pattern's consult section hardcodes a phone. These bodies carry a
+	// token instead so the number always comes from theme settings, which is
+	// how the shared Final CTA does it.
+	return strtr(
+		(string) file_get_contents( $path ), // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents
+		array(
+			'{{PHONE}}'      => (string) ( $info['phone'] ?? '' ),
+			'{{PHONE_HREF}}' => (string) ( $info['phone_href'] ?? '' ),
+		)
+	);
+}
+
+function pll_seed_marketing_sprint_drafts() {
+	$draft_meta = array(
+		'_pll_canonical_url'  => '',
+		'_pll_robots_noindex' => 1,
+	);
+
+	pll_seed_page(
+		'limb-lengthening-california',
+		'Limb Lengthening Surgery in California',
+		pll_marketing_sprint_body( 'limb-lengthening-california' ),
+		array(
+			'post_status' => 'draft',
+			'meta_input'  => array_merge(
+				$draft_meta,
+				array(
+					'_pll_seo_title'       => 'Limb Lengthening Surgery in California | Dr. Basmajian',
+					'_pll_seo_description' => 'Limb lengthening surgery in California with board-certified Dr. Basmajian in Upland, near Los Angeles. Serving LA, Orange County, San Diego and beyond.',
+				)
+			),
+		)
+	);
+
+	pll_seed_page(
+		'international-patients',
+		'International Patients',
+		pll_marketing_sprint_body( 'international-patients' ),
+		array(
+			'post_status' => 'draft',
+			'meta_input'  => array_merge(
+				$draft_meta,
+				array(
+					'_pll_seo_title'       => 'Limb Lengthening for International Patients in the USA',
+					'_pll_seo_description' => 'Limb lengthening for international patients traveling to the United States. How remote consultation, surgery, the in-country stay, and telehealth follow-up work.',
+				)
+			),
+		)
+	);
+
+	// The only one of these built from the IMAGE-LED pattern rather than
+	// pll/seo-landing-page: a hyperlocal map-pack anchor earns a photo-forward
+	// treatment, and it keeps a second worked example of that pattern alive.
+	pll_seed_page(
+		'limb-lengthening-upland',
+		'Limb Lengthening in Upland, CA',
+		pll_marketing_sprint_body( 'limb-lengthening-upland' ),
+		array(
+			'post_status' => 'draft',
+			'meta_input'  => array_merge(
+				$draft_meta,
+				array(
+					'_pll_seo_title'       => 'Limb Lengthening in Upland, CA · Premier Limb Lengthening',
+					'_pll_seo_description' => 'Limb lengthening surgery in Upland, CA. Premier Limb Lengthening performs the internal PRECICE nail procedure in the Inland Empire, near Ontario International Airport.',
+				)
+			),
+		)
+	);
+
+	// Regional sub-hub of the California geo cluster. UP to the state hub, DOWN
+	// to the city spokes (Upland now, Los Angeles and Orange County when built).
+	pll_seed_page(
+		'limb-lengthening-southern-california',
+		'Limb Lengthening in Southern California',
+		pll_marketing_sprint_body( 'limb-lengthening-southern-california' ),
+		array(
+			'post_status' => 'draft',
+			'meta_input'  => array_merge(
+				$draft_meta,
+				array(
+					'_pll_seo_title'       => 'Limb Lengthening in Southern California | Premier Limb Lengthening',
+					'_pll_seo_description' => 'Southern California limb lengthening based in Upland, serving Los Angeles, Orange County, the Inland Empire, and San Diego. Board-certified orthopedic surgeon.',
+				)
+			),
+		)
+	);
+
+	// "Near me" intent page. No build-ready Notion draft exists for it, and the
+	// Content Registry currently assigns the near-me terms to the California hub
+	// and the Upland page, so its top fill note asks Jaime to rule on
+	// cannibalization before it can publish. Draft + noindex like the others.
+	pll_seed_page(
+		'limb-lengthening-near-me',
+		'Limb Lengthening Near Me',
+		pll_marketing_sprint_body( 'limb-lengthening-near-me' ),
+		array(
+			'post_status' => 'draft',
+			'meta_input'  => array_merge(
+				$draft_meta,
+				array(
+					'_pll_seo_title'       => 'Limb Lengthening Near Me · Premier Limb Lengthening, Upland CA',
+					'_pll_seo_description' => 'Searching for limb lengthening near me or height surgery near me? Premier Limb Lengthening is based in Upland, CA, serving Los Angeles, Orange County, the Inland Empire, and San Diego.',
+				)
+			),
+		)
+	);
+
+	pll_seed_page(
+		'traveling-for-limb-lengthening',
+		'Traveling for Limb Lengthening',
+		pll_marketing_sprint_body( 'traveling-for-limb-lengthening' ),
+		array(
+			'post_status' => 'draft',
+			'meta_input'  => array_merge(
+				$draft_meta,
+				array(
+					'_pll_seo_title'       => 'Traveling for Limb Lengthening: The Trip, the Stay, and Getting Home',
+					'_pll_seo_description' => 'Traveling for limb lengthening surgery, step by step. Fly into Ontario airport (ONT), stay near the Upland, California clinic, then head home for remote follow-up.',
+				)
+			),
+		)
+	);
+
+	// Lives under the Your Surgery hub, so it needs that page as its parent to
+	// resolve at /your-surgery/daily-life-during-limb-lengthening-recovery/.
+	// The hub arrives via the WXR import, so resolve it rather than assume an ID.
+	$your_surgery = get_page_by_path( 'your-surgery', OBJECT, 'page' );
+	$daily_extra  = array(
+		'post_status' => 'draft',
+		'meta_input'  => array_merge(
+			$draft_meta,
+			array(
+				'_pll_seo_title'       => 'Daily Life During Limb Lengthening Recovery: Stairs, Bathrooms, and Help at Home',
+				'_pll_seo_description' => 'The practical side of limb lengthening recovery: getting up and down stairs, on and off the toilet, showering, dressing, what to buy before surgery, and whether you need help at home.',
+			)
+		),
+	);
+	if ( $your_surgery instanceof WP_Post ) {
+		$daily_extra['post_parent'] = $your_surgery->ID;
+	} else {
+		// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
+		error_log( 'pll seed: your-surgery parent missing, daily-life draft seeded at the site root' );
+	}
+
+	// A child page's path includes its parent, so pll_seed_page()'s bare-slug
+	// get_page_by_path() lookup can never find this one and would insert a
+	// fresh duplicate on every re-run. Resolve it on the full path here and
+	// hand the ID over, so a re-seed updates in place like every other page.
+	$daily_slug     = 'daily-life-during-limb-lengthening-recovery';
+	$daily_path     = $your_surgery instanceof WP_Post ? 'your-surgery/' . $daily_slug : $daily_slug;
+	$existing_daily = get_page_by_path( $daily_path, OBJECT, 'page' );
+
+	if ( $existing_daily instanceof WP_Post ) {
+		if ( ! ( defined( 'PLL_SEED_FORCE' ) && PLL_SEED_FORCE ) ) {
+			return;
+		}
+		$daily_extra['ID'] = $existing_daily->ID;
+	}
+
+	pll_seed_page(
+		$daily_slug,
+		'Daily Life During Limb Lengthening Recovery',
+		pll_marketing_sprint_body( 'daily-life-during-limb-lengthening-recovery' ),
+		$daily_extra
+	);
+}
+pll_seed_marketing_sprint_drafts();
+
+/**
+ * 3b) Authors — historical post ownership only (archives RETIRED).
  *
  * The WXR importer creates users keyed by login; the public nicename must
  * differ from the login (blunts login enumeration) and match the legacy
  * archive slugs. ccatandella authored 4 posts (per the scraped author
  * archive); edusenbury authored the rest. cjpeters had zero posts live and
  * is intentionally absent (the legacy archive already 404'd).
+ *
+ * RETIRED 2026-07-28 (owner decision: those contributors no longer exist,
+ * only Dr. Basmajian): the /author/<nicename>/ archives 301 to /blog/
+ * (pll-seo redirects.php), the users sitemap is removed (pll-seo
+ * sitemap.php), and every public byline renders "Dr. Hrayr Basmajian"
+ * (theme inc/cards.php). The accounts are still seeded so WXR re-imports
+ * keep mapping post ownership deterministically — they just never surface.
  */
 function pll_seed_authors() {
 	$ccatandella_posts = array(
@@ -609,6 +904,397 @@ function pll_seed_clinical_additions() {
 	}
 }
 pll_seed_clinical_additions();
+
+/**
+ * 3e) Internal-linking map (PLL_SEO_Audit_Report.docx, "Links INTO the new
+ * pillars"). Adds a near-the-top "see also" line to the WXR-generated pages so
+ * they pass their existing ranking signal to the better-matched pillars,
+ * WITHOUT editing scraped_content (shared with the Next.js parity source) or
+ * hand-editing the generated WXR. The homepage and pricing links live in their
+ * patterns (home-article.php, pricing-plans.php). Idempotent via the
+ * pll-related-links marker.
+ *
+ * @return array<string, array{intro: string, links: array<int, array{0: string, 1: string}>}>
+ */
+function pll_related_links() {
+	return array(
+		'/your-surgery/' => array(
+			'intro' => 'For the consumer-language overview of this procedure, see',
+			'links' => array(
+				array( '/leg-lengthening-surgery/', 'leg lengthening surgery' ),
+			),
+		),
+		'/your-surgery/how-much-taller-can-i-get-with-limb-lengthening/' => array(
+			'intro' => 'For the full procedure guides, see',
+			'links' => array(
+				array( '/height-surgery/', 'height surgery' ),
+				array( '/leg-lengthening-surgery/', 'leg lengthening surgery' ),
+			),
+		),
+
+		// A5 (cannibalization audit, owner-approved 2026-08-27). Google has
+		// already half-sorted the age pair on its own: the hub page wins "age
+		// limit" queries at #3-9 and the blog wins "too old / old age" at
+		// #10.5. Each still surfaces as a losing secondary on the other's
+		// queries, capping both, so the fix is differentiation rather than the
+		// consolidation used on the pain and fixation pairs. These two lines
+		// are what makes the split explicit to a crawler: intent-matched
+		// anchor text pointing each page at the other's actual subject.
+		// Custom anchor wording is why this lives here and not in
+		// pll_cannibalization_links() — that seeder can only wrap a phrase
+		// that already exists in the copy.
+		'/your-surgery/is-there-an-age-limit-for-limb-lengthening/' => array(
+			'intro' => 'For what changes when patients are older, see',
+			'links' => array(
+				array( '/am-i-too-old-for-limb-lengthening/', 'limb lengthening for patients over 40' ),
+			),
+		),
+		'/am-i-too-old-for-limb-lengthening/' => array(
+			'intro' => 'For the eligibility rules by age, see',
+			'links' => array(
+				array( '/your-surgery/is-there-an-age-limit-for-limb-lengthening/', 'age limit for limb lengthening' ),
+			),
+		),
+	);
+}
+
+/**
+ * Render the "see also" links paragraph. Hrefs are trusted developer constants.
+ *
+ * @param array $spec One pll_related_links() entry.
+ * @return string Block markup.
+ */
+function pll_render_related_links( $spec ) {
+	$anchors = array();
+	foreach ( $spec['links'] as $link ) {
+		$anchors[] = '<a href="' . $link[0] . '">' . esc_html( $link[1] ) . '</a>';
+	}
+	if ( count( $anchors ) > 1 ) {
+		$last   = array_pop( $anchors );
+		$joined = implode( ', ', $anchors ) . ' and ' . $last;
+	} else {
+		$joined = $anchors[0];
+	}
+	$text = esc_html( $spec['intro'] ) . ' ' . $joined . '.';
+	return '<!-- wp:paragraph {"className":"pll-related-links text-[14px] leading-[1.6] text-ink-soft"} -->' . "\n"
+		. '<p class="pll-related-links text-[14px] leading-[1.6] text-ink-soft">' . $text . '</p>' . "\n"
+		. '<!-- /wp:paragraph -->';
+}
+
+/**
+ * Inject the internal-link "see also" line near the top of the WXR pages.
+ */
+function pll_seed_internal_links() {
+	if ( ! function_exists( 'pll_seo_resolve_path_id' ) ) {
+		return;
+	}
+	foreach ( pll_related_links() as $path => $spec ) {
+		$post_id = pll_seo_resolve_path_id( $path );
+		if ( ! $post_id ) {
+			continue;
+		}
+		$post    = get_post( $post_id );
+		$content = $post->post_content;
+		if ( false !== strpos( $content, 'pll-related-links' ) ) {
+			continue;
+		}
+		$block  = pll_render_related_links( $spec );
+		$marker = '<!-- /wp:paragraph -->';
+		$pos    = strpos( $content, $marker );
+		if ( false !== $pos ) {
+			$at      = $pos + strlen( $marker );
+			$content = substr( $content, 0, $at ) . "\n\n" . $block . substr( $content, $at );
+		} else {
+			$content = $block . "\n\n" . $content;
+		}
+		wp_update_post(
+			array(
+				'ID'           => $post_id,
+				'post_content' => wp_slash( $content ),
+			)
+		);
+	}
+}
+pll_seed_internal_links();
+
+/**
+ * 3f) Contextual internal links to the SEO pillars (Tier 1 of the
+ * internal-linking expansion audit). Wraps an existing in-sentence phrase on
+ * each topically-relevant page in a link to the matching pillar, funneling
+ * authority up with varied, natural anchor text. Anchored on a longer verbatim
+ * fragment so the link lands in the intended sentence and never nests inside an
+ * existing link. Idempotent (skips a page that already links to that pillar),
+ * so it survives re-import and PLL_SEED_FORCE. scraped_content and the WXR stay
+ * untouched.
+ *
+ * @return array<string, array<int, array{0: string, 1: string, 2: string}>>
+ *         path => list of [ context fragment, anchor sub-phrase, pillar path ].
+ */
+function pll_contextual_links() {
+	$h = '/height-surgery/';
+	$l = '/leg-lengthening-surgery/';
+	return array(
+		// -> /height-surgery/
+		'/leg-up-or-let-down-can-you-gain-height-without-surgery/' => array(
+			array( 'provide permanent, measurable gains in height', 'permanent, measurable gains in height', $h ),
+		),
+		'/can-i-get-a-leg-lengthening-procedure-for-cosmetic-reasons/' => array(
+			array( 'simply gain a few extra inches of height', 'gain a few extra inches of height', $h ),
+		),
+		'/your-surgery/is-there-an-age-limit-for-limb-lengthening/' => array(
+			array( 'having surgery to become taller', 'surgery to become taller', $h ),
+		),
+		// -> /leg-lengthening-surgery/
+		'/fixation-methods-in-limb-lengthening-internal-vs-external/' => array(
+			array( 'your recovery timeline', 'recovery timeline', $l ),
+		),
+		'/limb-lengthening-pain-the-truth/' => array(
+			array( 'slowly separated, millimeter by millimeter', 'slowly separated, millimeter by millimeter', $l ),
+		),
+		'/your-surgery/external-internal-lengthening/' => array(
+			array( 'our only option for leg lengthening', 'leg lengthening', $l ),
+		),
+		'/your-surgery/limb-lengthening-expectations/' => array(
+			array( 'to guide the lengthening process', 'the lengthening process', $l ),
+		),
+		'/will-leg-lengthening-be-obvious/' => array(
+			array( 'Leg lengthening procedures have come a long way', 'Leg lengthening procedures', $l ),
+		),
+		'/is-leg-lengthening-off-limits-for-athletes/' => array(
+			array( 'recovery following a limb lengthening surgery', 'recovery following a limb lengthening surgery', $l ),
+		),
+		'/limb-lengthening-what-you-gain-what-you-risk/' => array(
+			array( 'The limb lengthening procedure typically involves', 'limb lengthening procedure', $l ),
+		),
+	);
+}
+
+/**
+ * Orphan-remediation contextual links (internal_links_audit.md, 2026-07-14).
+ *
+ * The audit found 9 blog posts with zero contextual inbound links (in-degree
+ * 0 excluding the blog loop). Each entry below gives one orphan its first
+ * inbound link from a topically related page, by wrapping a phrase that
+ * already exists in the host copy — the visible text never changes. Same
+ * shape and mechanics as pll_contextual_links() above. The 10th audit link
+ * (pricing → insurance article) lives in the pricing-included pattern, not
+ * here, because that page is pattern-composed.
+ *
+ * @return array<string, array<int, array{0: string, 1: string, 2: string}>>
+ */
+function pll_orphan_links() {
+	return array(
+		'/your-surgery/exercise-after-limb-lengthening/' => array(
+			array( 'you will likely not see any difference in your athletic performance', 'your athletic performance', '/is-leg-lengthening-off-limits-for-athletes/' ),
+		),
+		'/the-importance-of-physical-therapy-in-limb-lengthening/' => array(
+			array( 'As the bone grows longer, all the muscles, tendons, nerves, and blood vessels must stretch and remodel.', 'muscles, tendons, nerves, and blood vessels must stretch and remodel', '/what-happens-to-muscle-during-and-after-limb-lengthening/' ),
+			array( 'Techniques for sleeping, sitting, and traveling that protect the limb', 'sleeping, sitting, and traveling', '/tips-for-traveling-for-the-holidays-after-limb-lengthening-surgery/' ),
+		),
+		'/your-surgery/' => array(
+			array( 'or those who wish to change their height for cosmetic reasons can benefit from a procedure', 'can benefit from a procedure', '/are-you-a-good-candidate-for-limb-lengthening/' ),
+		),
+		'/bone-health-and-nutrition-before-and-after-limb-lengthening/' => array(
+			array( 'During distraction osteogenesis, your body has to grow brand-new bone', 'distraction osteogenesis', '/the-science-behind-bone-regeneration-and-limb-lengthening/' ),
+		),
+		'/can-i-get-a-leg-lengthening-procedure-for-cosmetic-reasons/' => array(
+			array( 'many of us have looked in the mirror and wondered what it would be like to be just a bit taller', 'what it would be like to be just a bit taller', '/leg-up-or-let-down-can-you-gain-height-without-surgery/' ),
+			array( 'Gaining those extra inches can have a real impact on how you carry yourself, both physically and mentally.', 'how you carry yourself, both physically and mentally', '/rewriting-the-body-norm-stigmas-around-limb-lengthening/' ),
+		),
+		'/your-surgery/how-much-taller-can-i-get-with-limb-lengthening/' => array(
+			array( 'This means we do not want the legs to look awkward after the procedure and lengthening.', 'look awkward after the procedure', '/will-leg-lengthening-be-obvious/' ),
+		),
+	);
+}
+
+/**
+ * 3g) Cannibalization-remediation contextual links (Keyword Cannibalization
+ * Audit, 2026-08-05; owner-approved in artifact comments 2026-08-27).
+ *
+ * Same mechanics and idempotence as pll_contextual_links() above: wrap a
+ * phrase that already exists in the host copy, so the visible text never
+ * changes and only the link graph moves. Grouped by ticket:
+ *
+ * A2 — "limb lengthening surgery" had no designated landing page, so Google
+ * rotated four URLs and none reached page one (~3,500 impressions, 9 clicks
+ * in six months). /your-surgery/ already carries the matching title and the
+ * MedicalProcedure schema; what it lacked was exact-phrase inbound anchors.
+ * Scope deliberately NARROWER than the audit text: the audit predates the
+ * /leg-lengthening-surgery/ and /height-surgery/ pillars, which now own the
+ * "leg lengthening surgery" and height families (see pll_contextual_links).
+ * Sending those terms to the hub as well would rebuild the same split this
+ * ticket exists to close, so the hub is anchored ONLY on the "limb
+ * lengthening surgery" wording.
+ *
+ * A6 — name queries split ~50/50 between the homepage and /dr-basmajian/
+ * with zero clicks, because both carry the name and neither declared the
+ * canonical Person. The Physician node and the founder reference handle the
+ * machine-readable half (pll-seo/includes/schema.php); these anchors are the
+ * link-graph half, first in-body mention per page pointed at the profile.
+ *
+ * A7 — the sports pair is nearly healthy (athletes article owns "play sports
+ * after", exercise page owns "can you run after") but each still bleeds
+ * 23-39% onto the other's queries. The exercise page already links back to
+ * the athletes article (pll_orphan_links), so only the outbound half is new,
+ * anchored on running language to match the exercise page's query family.
+ *
+ * @return array<string, array<int, array{0: string, 1: string, 2: string}>>
+ */
+function pll_cannibalization_links() {
+	$hub     = '/your-surgery/';
+	$surgeon = '/dr-basmajian/';
+
+	return array(
+		// A2 -> /your-surgery/ as the "limb lengthening surgery" head-term page.
+		'/limb-lengthening-what-you-gain-what-you-risk/' => array(
+			array( 'In fact, limb lengthening surgery can open up new worlds', 'limb lengthening surgery', $hub ),
+		),
+		'/are-you-a-good-candidate-for-limb-lengthening/' => array(
+			array( 'prior to limb lengthening surgery to reduce the risk', 'limb lengthening surgery', $hub ),
+		),
+		'/is-limb-lengthening-covered-by-insurance/' => array(
+			array( 'if limb lengthening surgery is deemed medically necessary', 'limb lengthening surgery', $hub ),
+		),
+		'/rewriting-the-body-norm-stigmas-around-limb-lengthening/' => array(
+			array( 'the decision to undergo limb lengthening surgery', 'limb lengthening surgery', $hub ),
+		),
+		'/your-surgery/can-i-bend-my-lengthening-nail/' => array(
+			array( 'In trauma and modern limb lengthening surgery, an intramedullary nail', 'limb lengthening surgery', $hub ),
+			// A6 name anchor on the same page (different href, so both apply).
+			array( 'a trauma background, like Dr. Basmajian, can help', 'Dr. Basmajian', $surgeon ),
+		),
+
+		// A6 -> /dr-basmajian/ as the canonical Person entity.
+		'/your-surgery/how-much-taller-can-i-get-with-limb-lengthening/' => array(
+			array( 'Dr. Basmajian will work with each of our patients', 'Dr. Basmajian', $surgeon ),
+		),
+		'/your-surgery/limb-lengthening-expectations/' => array(
+			array( 'During your consultation, Dr. Basmajian will review your medical history', 'Dr. Basmajian', $surgeon ),
+		),
+		'/your-surgery/external-internal-lengthening/' => array(
+			array( 'Dr. Basmajian has used both technologies', 'Dr. Basmajian', $surgeon ),
+		),
+		'/your-surgery/is-there-an-age-limit-for-limb-lengthening/' => array(
+			array( 'should be discussed with Dr. Basmajian and the family', 'Dr. Basmajian', $surgeon ),
+		),
+
+		// A7 -> the exercise page owns the "can you run after" family.
+		'/is-leg-lengthening-off-limits-for-athletes/' => array(
+			array( 'reintroduces running, jumping, cutting movements', 'running, jumping, cutting movements', '/your-surgery/exercise-after-limb-lengthening/' ),
+		),
+	);
+}
+
+/**
+ * 3h) Repoint inbound links away from retired URLs.
+ *
+ * A consolidation ticket (cannibalization audit A4) retires a duplicate by
+ * adding it to pll_seo_redirect_map(). The 301 keeps external links and
+ * bookmarks working, but every INTERNAL link still aimed at the retired URL
+ * would spend a redirect hop and keep telling Google the old URL is a real
+ * destination, which is most of what the consolidation is trying to stop.
+ *
+ * Driven off the redirect map itself rather than a second hand-maintained
+ * list, so retiring a URL in one place repoints the whole site. Rewrites both
+ * the root-relative and the absolute (legacy WXR) forms of the href, and
+ * matches on the trailing quote so a longer sibling slug can never be caught
+ * by a prefix match. Idempotent by construction: after one pass the old href
+ * is simply absent.
+ */
+function pll_seed_retired_link_repoint() {
+	if ( ! function_exists( 'pll_seo_redirect_map' ) ) {
+		return;
+	}
+	$map = pll_seo_redirect_map();
+	if ( ! $map ) {
+		return;
+	}
+
+	foreach ( get_posts(
+		array(
+			'post_type'      => array( 'post', 'page' ),
+			'post_status'    => 'any',
+			'posts_per_page' => -1,
+		)
+	) as $post ) {
+		$content = $post->post_content;
+		$before  = $content;
+
+		foreach ( $map as $from => $to ) {
+			$from = untrailingslashit( $from );
+			// Never rewrite a page's links to itself: the retired post keeps
+			// its own body, and self-links there are not the problem.
+			if ( pll_seo_resolve_path_id( $from . '/' ) === (int) $post->ID ) {
+				continue;
+			}
+			foreach ( array( $from, home_url( $from ) ) as $needle ) {
+				foreach ( array( $needle . '/"', $needle . '"' ) as $old ) {
+					$new     = ( $needle === $from ? $to : home_url( $to ) ) . '"';
+					$content = str_replace( 'href="' . $old, 'href="' . $new, $content );
+				}
+			}
+		}
+
+		if ( $content !== $before ) {
+			wp_update_post(
+				array(
+					'ID'           => $post->ID,
+					'post_content' => wp_slash( $content ),
+				)
+			);
+		}
+	}
+}
+
+/**
+ * Apply the contextual pillar + orphan-remediation + cannibalization links.
+ */
+function pll_seed_contextual_links() {
+	if ( ! function_exists( 'pll_seo_resolve_path_id' ) ) {
+		return;
+	}
+	$map = array_merge_recursive( pll_contextual_links(), pll_orphan_links(), pll_cannibalization_links() );
+	foreach ( $map as $path => $links ) {
+		$post_id = pll_seo_resolve_path_id( $path );
+		if ( ! $post_id ) {
+			continue;
+		}
+		$post    = get_post( $post_id );
+		$content = $post->post_content;
+		$changed = false;
+
+		foreach ( $links as $link ) {
+			list( $find, $anchor, $href ) = $link;
+			// Idempotent: skip if this pillar is already linked from the page.
+			if ( false !== strpos( $content, 'href="' . $href . '"' ) ) {
+				continue;
+			}
+			$pos = strpos( $content, $find );
+			if ( false === $pos ) {
+				// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
+				error_log( 'pll seed: contextual link phrase not found (' . $path . '): ' . $find );
+				continue;
+			}
+			$linked  = str_replace( $anchor, '<a href="' . $href . '">' . $anchor . '</a>', $find );
+			$content = substr( $content, 0, $pos ) . $linked . substr( $content, $pos + strlen( $find ) );
+			$changed = true;
+		}
+
+		if ( $changed ) {
+			wp_update_post(
+				array(
+					'ID'           => $post_id,
+					'post_content' => wp_slash( $content ),
+				)
+			);
+		}
+	}
+}
+pll_seed_contextual_links();
+
+// Last of the content passes: the seeders above may themselves add a link, and
+// this one has to see the final state of every page.
+pll_seed_retired_link_repoint();
 
 /**
  * 4) Reading settings.
