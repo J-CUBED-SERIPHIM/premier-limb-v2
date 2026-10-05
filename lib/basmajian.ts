@@ -17,7 +17,7 @@ export const specialties = [
 
 /** Headline credentials, shown as the dossier table. */
 export const credentials = [
-  { label: "Board Certified", value: "Fellow of the American Board of Orthopaedic Surgeons (2014)" },
+  { label: "Board Certified", value: "Double Board-Certified", list: ["Board-certified, American Board of Orthopaedic Surgery (ABOS)", "Fellow, American Academy of Orthopaedic Surgeons (FAAOS)"] as readonly string[] },
   { label: "Medical Director", value: "Orthopaedic Trauma · Pomona Valley Hospital Medical Center" },
   { label: "Founder & CEO", value: "Premier Orthopaedic & Trauma Specialists" },
   { label: "Previously", value: "Chair of Orthopaedic Trauma · Loma Linda University Medical Center" },

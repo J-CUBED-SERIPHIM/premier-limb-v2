@@ -125,8 +125,18 @@ $pll_portrait = get_theme_file_uri( 'assets/images/Dr-ig-pic.jpg' );
 						<!-- /wp:paragraph -->
 
 						<!-- wp:paragraph {"className":"text-[14px] leading-[1.6] text-ink"} -->
-						<p class="text-[14px] leading-[1.6] text-ink">Fellow of the American Board of Orthopaedic Surgeons (2014)</p>
+						<p class="text-[14px] leading-[1.6] text-ink">Double Board-Certified</p>
 						<!-- /wp:paragraph -->
+
+						<!-- wp:list {"className":"col-start-1 sm:col-start-2 list-disc pl-5 space-y-0.5 text-[14px] leading-[1.6] text-ink"} -->
+						<ul class="wp-block-list col-start-1 sm:col-start-2 list-disc pl-5 space-y-0.5 text-[14px] leading-[1.6] text-ink"><!-- wp:list-item -->
+						<li>Board-certified, American Board of Orthopaedic Surgery (ABOS)</li>
+						<!-- /wp:list-item -->
+
+						<!-- wp:list-item -->
+						<li>Fellow, American Academy of Orthopaedic Surgeons (FAAOS)</li>
+						<!-- /wp:list-item --></ul>
+						<!-- /wp:list -->
 					</div>
 					<!-- /wp:group -->
 

@@ -202,6 +202,13 @@ export default function V2DrBasmajianPage() {
                   </div>
                   <div className="font-serif text-[18px] lg:text-[20px] leading-[1.35] text-ink max-w-[60ch]">
                     {row.value}
+                    {"list" in row && row.list && (
+                      <ul className="mt-2 list-disc pl-5 space-y-1 text-[16px] lg:text-[17px] leading-[1.5]">
+                        {row.list.map((item) => (
+                          <li key={item}>{item}</li>
+                        ))}
+                      </ul>
+                    )}
                   </div>
                 </div>
               ))}

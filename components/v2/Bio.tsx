@@ -119,7 +119,16 @@ export function Bio() {
                   <div className="font-mono uppercase tracking-[0.2em] text-[10.5px] text-muted pt-1">
                     {c.label}
                   </div>
-                  <div className="text-[14px] leading-[1.6] text-ink">{c.value}</div>
+                  <div className="text-[14px] leading-[1.6] text-ink">
+                    {c.value}
+                    {c.list && (
+                      <ul className="mt-1.5 list-disc pl-5 space-y-0.5">
+                        {c.list.map((item) => (
+                          <li key={item}>{item}</li>
+                        ))}
+                      </ul>
+                    )}
+                  </div>
                 </div>
               ))}
             </div>
@@ -135,11 +144,11 @@ export function Bio() {
  * verified CV data in lib/basmajian.ts; "Faculty" supplied by the client
  * handoff. Keep medically accurate; do not paraphrase titles.
  */
-const credentialRows = [
-  { label: "Board Certified", value: "Fellow of the American Board of Orthopaedic Surgeons (2014)" },
+const credentialRows: readonly { label: string; value: string; list?: readonly string[] }[] = [
+  { label: "Board Certified", value: "Double Board-Certified", list: ["Board-certified, American Board of Orthopaedic Surgery (ABOS)", "Fellow, American Academy of Orthopaedic Surgeons (FAAOS)"] as readonly string[] },
   { label: "Residency", value: "Chief Resident, Orthopaedic Surgery, USC-LA County, Los Angeles" },
   { label: "Previously", value: "Chair of Orthopaedic Trauma, Loma Linda University Medical Center" },
   { label: "Faculty", value: "Assistant Professor of Orthopaedic Surgery" },
   { label: "Societies", value: "AAOS, Orthopaedic Trauma Association, AO Trauma, California Orthopaedic Association" },
   { label: "Licensure", value: "California & Arizona · DEA · CA Fluoroscopy/Radiology" },
-] as const;
+];

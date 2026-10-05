@@ -39,8 +39,18 @@
 					<!-- /wp:paragraph -->
 
 					<!-- wp:paragraph {"className":"font-serif text-[18px] lg:text-[20px] leading-[1.35] text-ink max-w-[60ch]"} -->
-					<p class="font-serif text-[18px] lg:text-[20px] leading-[1.35] text-ink max-w-[60ch]">Fellow of the American Board of Orthopaedic Surgeons (2014)</p>
+					<p class="font-serif text-[18px] lg:text-[20px] leading-[1.35] text-ink max-w-[60ch]">Double Board-Certified</p>
 					<!-- /wp:paragraph -->
+
+					<!-- wp:list {"className":"col-start-1 sm:col-start-2 list-disc pl-5 space-y-1 text-[16px] lg:text-[17px] leading-[1.5] text-ink"} -->
+					<ul class="wp-block-list col-start-1 sm:col-start-2 list-disc pl-5 space-y-1 text-[16px] lg:text-[17px] leading-[1.5] text-ink"><!-- wp:list-item -->
+					<li>Board-certified, American Board of Orthopaedic Surgery (ABOS)</li>
+					<!-- /wp:list-item -->
+
+					<!-- wp:list-item -->
+					<li>Fellow, American Academy of Orthopaedic Surgeons (FAAOS)</li>
+					<!-- /wp:list-item --></ul>
+					<!-- /wp:list -->
 				</div>
 				<!-- /wp:group -->
 
